@@ -4,22 +4,6 @@
 
 //Dusan commit
 
-class Matrix {
-public:
-  int solution_matrix[9][9];
-  std::vector<int> possible_matrix[9][9];
-
-  Matrix() {
-    for (int i = 0; i < 9; ++i)
-      for (int j = 0; j < 9; ++j)
-        solution_matrix[i][j] = 0;
-  }
-};
-
-class Sudoku {
-public:
-  std::vector<Matrix> calculation;
-};
 
 typedef struct _moguc {
   int vrednost;
