@@ -13,7 +13,7 @@ typedef struct _moguc {
 
 moguc *kreiraj_novi(int vrednost) {
   moguc *novi = (moguc *)malloc(sizeof(moguc));
-  if (novi == NULL) {
+  if (novi == nullptr) {
     fprintf(stderr, "Greska");
     exit(EXIT_FAILURE);
   }
@@ -416,7 +416,7 @@ int main() {
   int po = 0;
 
   ulaz = fopen("brojevi1.txt", "r");
-  if (ulaz == NULL) {
+  if (ulaz == nullptr) {
     fprintf(stderr, "GRESKA");
     exit(EXIT_FAILURE);
   }
