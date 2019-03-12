@@ -1,6 +1,7 @@
 #ifndef SUDOKU_H
 #define SUDOKU_H
 #include "matrix.h"
+#include <QString>
 
 class Sudoku {
 private:
@@ -8,6 +9,8 @@ private:
 
 public:
   Sudoku();
+  Sudoku(QString input_numbers);
+  QString resolve();
 };
 
 #endif // SUDOKU_H

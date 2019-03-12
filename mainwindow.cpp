@@ -15,14 +15,14 @@ MainWindow::MainWindow(QWidget *parent)
 
   QGridLayout *layout = new QGridLayout(sudoku);
 
-  QFont littleFont("Courier New", 48);
+  QFont defaultFont("Courier New", 48);
   int h_line_count = 0;
+
   for (int i = 0; i < 11; ++i) {
     if (i % 4 == 3) {
       h_line_count++;
       QFrame *line = new QFrame();
       line->setFrameShape(QFrame::HLine);
-      line->setMidLineWidth(10);
       layout->addWidget(line, i, 0, 1, 11);
       continue;
     }
@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
       lineEdit->setAlignment(Qt::AlignmentFlag::AlignCenter);
       lineEdit->setMaxLength(1);
       lineEdit->setFixedSize(51, 51);
-      lineEdit->setFont(littleFont);
+      lineEdit->setFont(defaultFont);
       lineEdit->setStyleSheet("background: #FFFFFF;");
       matrix[i - h_line_count][j - v_line_count] = lineEdit;
       layout->addWidget(lineEdit, i, j);
@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
   QLabel *menu_title = new QLabel("SUDOKU SOLVER");
   menu_title->setAlignment(Qt::AlignmentFlag::AlignHCenter);
   menu_title->setWordWrap(true);
-  menu_title->setFont(littleFont);
+  menu_title->setFont(defaultFont);
   menu_title->setStyleSheet("border-style: none;");
   menuLayout->addWidget(menu_title);
 
@@ -72,14 +72,17 @@ MainWindow::MainWindow(QWidget *parent)
   menu_line->setFrameShape(QFrame::HLine);
   menuLayout->addWidget(menu_line);
 
-  QPushButton *matrix_lock = new QPushButton("Lock the input");
+  matrix_lock = new QPushButton("Lock the input");
   matrix_lock->setFixedSize(200, 50);
+  QObject::connect(matrix_lock, SIGNAL(clicked()), this, SLOT(lock_toggle()));
   menuLayout->addWidget(matrix_lock);
 
-  QObject::connect(matrix_lock, SIGNAL(clicked()), this, SLOT(lock_toggle()));
+  sudoku_solve = new QPushButton("Solve it!");
+  sudoku_solve->setFixedSize(200, 50);
+  QObject::connect(sudoku_solve, SIGNAL(clicked()), this, SLOT(solve_sudoku()));
+  menuLayout->addWidget(sudoku_solve);
 
   QSpacerItem *spacer = new QSpacerItem(1, 400);
-
   menuLayout->addSpacerItem(spacer);
 
   horizontalLayout->addWidget(menu);
@@ -87,14 +90,54 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::lock_toggle() {
   locked = !locked;
-  QString color = "color: #000000;";
+  QString color = locked ? "background: #EEEEEE;color: #FF0000;"
+                         : "background: #FFFFFF;color: #000000;";
+  if (locked)
+    matrix_lock->setText("Unlock the input");
+  else
+    matrix_lock->setText("Lock the input");
+
+  if (locked)
+    current_numbers = "";
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
-      if (locked)
-        color = "color: #FF0000;";
-
       matrix[i][j]->setStyleSheet(matrix[i][j]->styleSheet() + color);
       matrix[i][j]->setReadOnly(locked);
+      if (locked)
+        current_numbers +=
+            (matrix[i][j]->text().isEmpty() ? "0" : matrix[i][j]->text());
+      else {
+        QString s = current_numbers.at(i * 9 + j) == "0"
+                        ? QString("")
+                        : current_numbers.at(i * 9 + j);
+        matrix[i][j]->setText(s);
+      }
+    }
+  }
+  std::cout << current_numbers.toStdString() << std::endl;
+}
+
+void MainWindow::solve_sudoku() {
+  if (!locked)
+    lock_toggle();
+
+  Sudoku *instance = new Sudoku(current_numbers);
+  QString solution = instance->resolve();
+  update_solution(solution);
+}
+
+void MainWindow::update_solution(QString solution) {
+
+  QString color_found = "background: #EEEEEE;color: #00AA00;";
+  QString color_given = "background: #EEEEEE;color: #000000;";
+
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      QString color = solution.at(i * 9 + j) == current_numbers.at(i * 9 + j)
+                          ? color_given
+                          : color_found;
+      matrix[i][j]->setStyleSheet(color);
+      matrix[i][j]->setText(solution.at(i * 9 + j));
     }
   }
 }
