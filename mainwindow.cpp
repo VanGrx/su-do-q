@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   QGridLayout *layout = new QGridLayout(sudoku);
 
-  QFont defaultFont("Courier New", 48);
+  QFont defaultFont("Arial", 30);
   int h_line_count = 0;
 
   for (int i = 0; i < 11; ++i) {
@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
       QLineEdit *lineEdit = new QLineEdit(this);
       lineEdit->setAlignment(Qt::AlignmentFlag::AlignCenter);
       lineEdit->setMaxLength(1);
-      lineEdit->setFixedSize(51, 51);
+      lineEdit->setFixedSize(60, 60);
       lineEdit->setFont(defaultFont);
       lineEdit->setStyleSheet("background: #FFFFFF;");
       matrix[i - h_line_count][j - v_line_count] = lineEdit;
