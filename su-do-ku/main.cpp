@@ -1,9 +1,9 @@
+#include "mainwindow.h"
+#include <QApplication>
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-
-//Dusan commit
-
+// Dusan commit
 
 typedef struct _moguc {
   int vrednost;
@@ -401,7 +401,15 @@ void ispisi(int matrica[9][9][81], int k) {
   return;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  QApplication a(argc, argv);
+  MainWindow w;
+  w.show();
+
+  return a.exec();
+}
+
+/*int main() {
   int matrica[9][9][81];
   int i, j, k = 0;
   int najmanje = 2;
@@ -456,7 +464,7 @@ rad:
 
       if (matrica[i][j][k] == 0 &&
           lista[i][j][k]->sledeci ==
-              NULL) { /* PRVI DEO, ako je moguc samo jedan broj, upisuje ga */
+              NULL) { // PRVI DEO, ako je moguc samo jedan broj, upisuje ga
         matrica[i][j][k] = lista[i][j][k]->vrednost;
         ispisi(matrica, k);
         skini(lista, i, j, k, matrica[i][j][k], matrica);
@@ -511,3 +519,4 @@ rad:
 
   return 0;
 }
+*/

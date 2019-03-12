@@ -1,6 +1,3 @@
 #include "sudoku.h"
 
-Sudoku::Sudoku()
-{
-
-}
+Sudoku::Sudoku() {}
