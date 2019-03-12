@@ -1,8 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QGridLayout>
-#include <QLabel>
-#include <QLineEdit>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -17,8 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
   sudoku->setFixedSize(75 * 9, 75 * 9);
 
   QGridLayout *layout = new QGridLayout(sudoku);
-
-  QLineEdit *matrix[9][9];
 
   QFont littleFont("Courier New", 48);
   int h_line_count = 0;
@@ -47,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
       lineEdit->setMaxLength(1);
       lineEdit->setFixedSize(51, 51);
       lineEdit->setFont(littleFont);
-      lineEdit->setStyleSheet("background: #FFFFFF");
+      lineEdit->setStyleSheet("background: #FFFFFF;");
       matrix[i - h_line_count][j - v_line_count] = lineEdit;
       layout->addWidget(lineEdit, i, j);
     }
@@ -59,19 +54,49 @@ MainWindow::MainWindow(QWidget *parent)
 
   // Initialization of menu GUI part
   QWidget *menu = new QWidget();
+  menu->setFixedWidth(350);
   menu->setStyleSheet("border-color: black;border-style: solid; "
                       "border-width: 2px; background: #D4D4D4;");
 
   QVBoxLayout *menuLayout = new QVBoxLayout(menu);
-  menuLayout->setAlignment(Qt::AlignmentFlag::AlignCenter |
-                           Qt::AlignmentFlag::AlignTop);
+  menuLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
-  QLabel *menu_title = new QLabel("SUDOKU\nSOLVER");
+  QLabel *menu_title = new QLabel("SUDOKU SOLVER");
+  menu_title->setAlignment(Qt::AlignmentFlag::AlignHCenter);
+  menu_title->setWordWrap(true);
   menu_title->setFont(littleFont);
   menu_title->setStyleSheet("border-style: none;");
   menuLayout->addWidget(menu_title);
 
+  QFrame *menu_line = new QFrame();
+  menu_line->setFrameShape(QFrame::HLine);
+  menuLayout->addWidget(menu_line);
+
+  QPushButton *matrix_lock = new QPushButton("Lock the input");
+  matrix_lock->setFixedSize(200, 50);
+  menuLayout->addWidget(matrix_lock);
+
+  QObject::connect(matrix_lock, SIGNAL(clicked()), this, SLOT(lock_toggle()));
+
+  QSpacerItem *spacer = new QSpacerItem(1, 400);
+
+  menuLayout->addSpacerItem(spacer);
+
   horizontalLayout->addWidget(menu);
+}
+
+void MainWindow::lock_toggle() {
+  locked = !locked;
+  QString color = "color: #000000;";
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      if (locked)
+        color = "color: #FF0000;";
+
+      matrix[i][j]->setStyleSheet(matrix[i][j]->styleSheet() + color);
+      matrix[i][j]->setReadOnly(locked);
+    }
+  }
 }
 
 MainWindow::~MainWindow() { delete ui; }
