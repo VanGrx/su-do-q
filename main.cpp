@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-// Dusan commit
 
 typedef struct _moguc {
   int vrednost;
