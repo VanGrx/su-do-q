@@ -26,7 +26,8 @@ SOURCES += \
 HEADERS += \
     matrix.h \
     sudoku.h \
-    mainwindow.h
+    mainwindow.h \
+    myfunc.h
 
 FORMS += \
     mainwindow.ui
@@ -35,3 +36,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    numbers
