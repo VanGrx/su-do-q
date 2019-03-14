@@ -6,7 +6,9 @@ Sudoku::Sudoku() {}
 Sudoku::Sudoku(QString input_numbers) {}
 
 QString Sudoku::resolve() {
+  Matrix m;
+  m.createMatrixFromFile();
 
-  return "123456789123456789123456789123456789123456789123456789123456789123456"
-         "789123456789";
+  // Sudoku *starter = new Sudoku();
+  return m.getStringMatrix();
 }

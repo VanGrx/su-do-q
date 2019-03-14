@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
   sudoku_initalize = new QPushButton("Initialize sudoku");
   sudoku_initalize->setFixedSize(200, 50);
   QObject::connect(sudoku_initalize, SIGNAL(clicked()), this,
-                   SLOT(init_sudoku()));
+                   SLOT(solve_sudoku()));
   menuLayout->addWidget(sudoku_initalize);
 
   matrix_lock = new QPushButton("Lock the input");
@@ -93,17 +93,6 @@ MainWindow::MainWindow(QWidget *parent)
   menuLayout->addSpacerItem(spacer);
 
   horizontalLayout->addWidget(menu);
-}
-
-void MainWindow::init_sudoku() {
-  Matrix m;
-  m.createMatrixFromFile();
-
-  // Sudoku *starter = new Sudoku();
-  QString temp = m.getStringMatrix();
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 9; j++)
-      matrix[i][j]->setText(temp.at(i * 9 + j));
 }
 
 void MainWindow::lock_toggle() {

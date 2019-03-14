@@ -22,7 +22,6 @@ public:
 public slots:
   void lock_toggle();
   void solve_sudoku();
-  void init_sudoku();
 
 private:
   Ui::MainWindow *ui;
