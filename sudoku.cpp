@@ -3,14 +3,12 @@
 
 Sudoku::Sudoku() {}
 
-Sudoku::Sudoku(QString input_numbers) {}
+Sudoku::Sudoku(QString input_numbers) {
+  Matrix m = Matrix(input_numbers);
+  calculation.push_back(m);
+}
 
 QString Sudoku::resolve() {
-  Matrix m;
-  m.createMatrixFromFile();
-  // Sudoku *starter = new Sudoku();
-  // starter->calculation.push_back(m);
-  m.solveSingleElements();
-
-  return m.getStringMatrix();
+  calculation.at(0).solveSingleElements();
+  return calculation.at(0).getStringMatrix();
 }

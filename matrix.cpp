@@ -20,11 +20,20 @@ void Matrix::storeSinglePosibility(int i, int j) {
 
 Matrix::Matrix(){};
 
+Matrix::Matrix(QString input) : m_string_matrix(input) { prepareMatrix(); }
+
+void Matrix::prepareMatrix() {
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 9; j++)
+      m_solution_matrix[i][j] = m_string_matrix.at(i * 9 + j).digitValue();
+  initializePossibleMatrix();
+}
+
 void Matrix::updatePossibleMatrix(int num, int i, int j) {
   m_possible_matrix[i][j].clear();
 
   for (int j1 = 0; j1 < 9; j1++) {
-    if (j1 == j && m_solution_matrix[i, j1] != 0)
+    if (j1 == j && m_solution_matrix[i][j1] != 0)
       continue;
     auto it = std::find(m_possible_matrix[i][j1].begin(),
                         m_possible_matrix[i][j1].end(), num);
@@ -47,7 +56,7 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
     }
   }
   for (int i1 = 0; i1 < 9; i1++) {
-    if (i1 == i && m_solution_matrix[i1, j] != 0)
+    if (i1 == i && m_solution_matrix[i1][j] != 0)
       continue;
     auto it = std::find(m_possible_matrix[i1][j].begin(),
                         m_possible_matrix[i1][j].end(), num);
@@ -91,44 +100,13 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
 void Matrix::initializePossibleMatrix() {
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 9; j++)
-      for (int k = 1; k < 9; k++)
+      for (int k = 1; k <= 9; k++)
         m_possible_matrix[i][j].push_back(k);
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 9; j++)
       if (m_solution_matrix[i][j] != 0) {
         updatePossibleMatrix(m_solution_matrix[i][j], i, j);
       }
-}
-
-void Matrix::createMatrixFromFile() {
-  FILE *fRead;
-
-  fRead = fopen("C:\\Git\\su-do-q\\numbers", "r");
-
-  if (fRead == nullptr) {
-    fclose(fRead);
-    std::cerr << "Wrong path to file." << std::endl;
-  }
-
-  char num;
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 9; j++) {
-      fscanf(fRead, "%c", &num);
-      m_string_matrix.append(num);
-      m_solution_matrix[i][j] = num - '0';
-    }
-  initializePossibleMatrix();
-  fclose(fRead);
-  printMatrix();
-
-  /*
-   * TODO : if a read char differs from 0, remove that number from row ,
-  col, box ,and delete the list of possibilities from that cell
-   *
-  if (num != '0'){
-
-  }
-  */
 }
 
 void Matrix::printPossibleMatrix() const {
@@ -160,9 +138,10 @@ void Matrix::printMatrix() const {
 }
 
 void Matrix::parseMatrixAsString() {
+  m_string_matrix.clear();
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 9; j++) {
-      m_string_matrix.append((char)m_solution_matrix[i][j]);
+      m_string_matrix.append(m_solution_matrix[i][j] + '0');
     }
 }
 
@@ -179,6 +158,7 @@ void Matrix::solveSingleElements() {
     updatePossibleMatrix(m_possible_matrix[i][j].front(), i, j);
   }
   printMatrix();
+  parseMatrixAsString();
   /* goes through whole matrix,finds single posibility ,inserts num
 
 for (int i = 0; i < 9; i++) {

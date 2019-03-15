@@ -17,8 +17,8 @@ private:
 
 class Matrix {
 public:
-  // Matrix(FILE *fRead);
   Matrix();
+  Matrix(QString input);
   void printMatrix() const;
   void createMatrixFromFile();
   void parseMatrixAsString();
@@ -28,6 +28,7 @@ public:
   void printPossibleMatrix() const;
   void solveSingleElements();
   void storeSinglePosibility(int i, int j);
+  void prepareMatrix();
   ~Matrix();
 
 private:
