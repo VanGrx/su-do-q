@@ -9,5 +9,8 @@ QString Sudoku::resolve() {
   Matrix m;
   m.createMatrixFromFile();
   // Sudoku *starter = new Sudoku();
+  // starter->calculation.push_back(m);
+  m.solveSingleElements();
+
   return m.getStringMatrix();
 }

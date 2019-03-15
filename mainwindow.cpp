@@ -121,7 +121,7 @@ void MainWindow::lock_toggle() {
       }
     }
   }
-  std::cout << current_numbers.toStdString() << std::endl;
+  // std::cout << current_numbers.toStdString() << std::endl;
 }
 
 void MainWindow::solve_sudoku() {

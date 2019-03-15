@@ -3,24 +3,36 @@
 #include <stdio.h>
 #include <string.h>
 
+singlePosibility::singlePosibility(int i, int j) : m_i(i), m_j(j){};
+int singlePosibility::getI() const { return m_i; }
+int singlePosibility::getJ() const { return m_j; }
+
+void Matrix::storeSinglePosibility(int i, int j) {
+  auto iterator = std::find_if(m_store_possible.begin(), m_store_possible.end(),
+                               [&i, &j](const singlePosibility &s) {
+                                 return (i == s.getI()) && (j == s.getJ());
+                               });
+  if (iterator == m_store_possible.end())
+    m_store_possible.push_back(singlePosibility(i, j));
+}
+
 Matrix::Matrix(){};
 
 void Matrix::updatePossibleMatrix(int num, int i, int j) {
   // first initialize this cell's possible matrix to 0
   m_possible_matrix[i][j].clear();
 
-  for (int j1 = 0; j1 < 9;
-       j1++) { // i1=3       //i1 =i  a j = 0,9 i onda j1 = j a i=0,9
+  for (int j1 = 0; j1 < 9; j1++) {
     if (j1 == j && m_solution_matrix[i, j1] != 0)
       continue;
     auto it = std::find(m_possible_matrix[i][j1].begin(),
                         m_possible_matrix[i][j1].end(), num);
     if (it != m_possible_matrix[i][j1].end()) { // found a hit -> delete it
       //  std::cout << "For num" << num << " : " << *it << std::endl;
-      m_possible_matrix[i][j1].erase(
-          it); // check if remaining posibilities is 1 -> than insert and repeat
+      m_possible_matrix[i][j1].erase(it);
       if (m_possible_matrix[i][j1].size() == 1) {
-        // TODO insert into field,than repeat update
+        storeSinglePosibility(i,
+                              j1); // TODO insert into field,than repeat update
         /*
          * can be done with threads :
          * 1st thread inserts the 1 number remaining in m_possible_matrix into
@@ -44,6 +56,7 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
           it); // check if remaining posibilities is 1 -> than insert and repeat
       if (m_possible_matrix[i1][j].size() == 1) {
         // TODO insert into field,than repeat update
+        storeSinglePosibility(i1, j);
       }
     }
   }
@@ -64,6 +77,8 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
               it); // check if remaining posibilities
                    // is 1 -> than insert and repeat
           if (m_possible_matrix[boxX][boxY].size() == 1) {
+            storeSinglePosibility(i, j);
+
             // TODO insert into field,than repeat update
           }
         }
@@ -144,6 +159,7 @@ void Matrix::printMatrix() {
     }
     std::cout << std::endl;
   }
+  printPossibleMatrix();
 }
 
 void Matrix::parseMatrixAsString() {
@@ -154,3 +170,25 @@ void Matrix::parseMatrixAsString() {
 }
 
 QString Matrix::getStringMatrix() { return m_string_matrix; }
+
+void Matrix::solveSingleElements() {
+  while (m_store_possible.empty() == false) {
+    int i = m_store_possible.front().getI();
+    int j = m_store_possible.front().getJ();
+    m_store_possible.erase(m_store_possible.begin());
+    m_solution_matrix[i][j] = m_possible_matrix[i][j].front();
+    updatePossibleMatrix(m_possible_matrix[i][j].front(), i, j);
+  }
+  printMatrix();
+  /* goes through whole matrix,finds single posibility ,inserts num
+
+for (int i = 0; i < 9; i++) {
+  for (int j = 0; j < 9; j++) {
+    if (m_solution_matrix[i][j] == 0 && m_possible_matrix[i][j].size() == 1) {
+      m_solution_matrix[i][j] = m_possible_matrix[i][j].front();
+      updatePossibleMatrix(m_possible_matrix[i][j].front(), i, j);
+    }
+  }
+}*/
+  // printMatrix();
+}
