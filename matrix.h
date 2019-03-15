@@ -19,15 +19,16 @@ class Matrix {
 public:
   // Matrix(FILE *fRead);
   Matrix();
-  void printMatrix();
+  void printMatrix() const;
   void createMatrixFromFile();
   void parseMatrixAsString();
-  QString getStringMatrix();
+  QString getStringMatrix() const;
   void updatePossibleMatrix(int num, int i, int j);
   void initializePossibleMatrix();
-  void printPossibleMatrix();
+  void printPossibleMatrix() const;
   void solveSingleElements();
   void storeSinglePosibility(int i, int j);
+  ~Matrix();
 
 private:
   int m_solution_matrix[9][9];

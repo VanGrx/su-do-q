@@ -8,6 +8,8 @@ int singlePosibility::getI() const { return m_i; }
 int singlePosibility::getJ() const { return m_j; }
 
 void Matrix::storeSinglePosibility(int i, int j) {
+  // check if this index is already stored in vector of posibilities
+  // if not store new coordinates for a single posibility
   auto iterator = std::find_if(m_store_possible.begin(), m_store_possible.end(),
                                [&i, &j](const singlePosibility &s) {
                                  return (i == s.getI()) && (j == s.getJ());
@@ -19,7 +21,6 @@ void Matrix::storeSinglePosibility(int i, int j) {
 Matrix::Matrix(){};
 
 void Matrix::updatePossibleMatrix(int num, int i, int j) {
-  // first initialize this cell's possible matrix to 0
   m_possible_matrix[i][j].clear();
 
   for (int j1 = 0; j1 < 9; j1++) {
@@ -28,7 +29,6 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
     auto it = std::find(m_possible_matrix[i][j1].begin(),
                         m_possible_matrix[i][j1].end(), num);
     if (it != m_possible_matrix[i][j1].end()) { // found a hit -> delete it
-      //  std::cout << "For num" << num << " : " << *it << std::endl;
       m_possible_matrix[i][j1].erase(it);
       if (m_possible_matrix[i][j1].size() == 1) {
         storeSinglePosibility(i,
@@ -77,13 +77,10 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
               it); // check if remaining posibilities
                    // is 1 -> than insert and repeat
           if (m_possible_matrix[boxX][boxY].size() == 1) {
-            storeSinglePosibility(i, j);
+            storeSinglePosibility(boxX, boxY);
 
             // TODO insert into field,than repeat update
           }
-        }
-
-        else {
         }
       }
     }
@@ -134,7 +131,7 @@ void Matrix::createMatrixFromFile() {
   */
 }
 
-void Matrix::printPossibleMatrix() {
+void Matrix::printPossibleMatrix() const {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
       std::cout << m_solution_matrix[i][j] << " :  ";
@@ -145,7 +142,7 @@ void Matrix::printPossibleMatrix() {
   }
 }
 
-void Matrix::printMatrix() {
+void Matrix::printMatrix() const {
 
   for (int i = 0; i < 9; i++) {
     if (i % 3 == 0 && i != 0) {
@@ -169,12 +166,14 @@ void Matrix::parseMatrixAsString() {
     }
 }
 
-QString Matrix::getStringMatrix() { return m_string_matrix; }
+QString Matrix::getStringMatrix() const { return m_string_matrix; }
 
 void Matrix::solveSingleElements() {
   while (m_store_possible.empty() == false) {
     int i = m_store_possible.front().getI();
     int j = m_store_possible.front().getJ();
+    std::cout << "Single element- i:" << i << " , j:" << j
+              << " ,number:" << m_possible_matrix[i][j].front() << std::endl;
     m_store_possible.erase(m_store_possible.begin());
     m_solution_matrix[i][j] = m_possible_matrix[i][j].front();
     updatePossibleMatrix(m_possible_matrix[i][j].front(), i, j);
@@ -192,3 +191,5 @@ for (int i = 0; i < 9; i++) {
 }*/
   // printMatrix();
 }
+
+Matrix::~Matrix(){};
