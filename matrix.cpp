@@ -6,13 +6,17 @@
 Matrix::Matrix(){};
 
 void Matrix::updatePossibleMatrix(int num, int i, int j) {
+  // first initialize this cell's possible matrix to 0
+  m_possible_matrix[i][j].clear();
+
   for (int j1 = 0; j1 < 9;
        j1++) { // i1=3       //i1 =i  a j = 0,9 i onda j1 = j a i=0,9
-    if (j1 == j || m_solution_matrix[i, j1] != 0)
+    if (j1 == j && m_solution_matrix[i, j1] != 0)
       continue;
     auto it = std::find(m_possible_matrix[i][j1].begin(),
                         m_possible_matrix[i][j1].end(), num);
     if (it != m_possible_matrix[i][j1].end()) { // found a hit -> delete it
+      //  std::cout << "For num" << num << " : " << *it << std::endl;
       m_possible_matrix[i][j1].erase(
           it); // check if remaining posibilities is 1 -> than insert and repeat
       if (m_possible_matrix[i][j1].size() == 1) {
@@ -31,7 +35,7 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
     }
   }
   for (int i1 = 0; i1 < 9; i1++) {
-    if (i1 == i || m_solution_matrix[i1, j] != 0)
+    if (i1 == i && m_solution_matrix[i1, j] != 0)
       continue;
     auto it = std::find(m_possible_matrix[i1][j].begin(),
                         m_possible_matrix[i1][j].end(), num);
@@ -45,14 +49,13 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
   }
 
   // box check
-  int boxX = i <= 2 ? 2 : i <= 5 ? 3 : 6;
-  int boxY = j <= 2 ? 2 : j <= 5 ? 3 : 6;
+  int boxX = i <= 2 ? 0 : i <= 5 ? 3 : 6;
+  int boxY = j <= 2 ? 0 : j <= 5 ? 3 : 6;
 
-  for (int i1 = 0; i1 < 3; i1++, boxX++)
+  for (int i1 = 0; i1 < 3; i1++, boxX++) {
     for (int j1 = 0; j1 < 3; j1++, boxY++) {
-      if (boxX == i || boxY == j || m_solution_matrix[boxX, boxY] != 0)
-        continue;
-      else {
+      if (m_solution_matrix[boxX][boxY] == 0 &&
+          m_possible_matrix[boxX][boxY].empty() == false) {
         auto it = std::find(m_possible_matrix[boxX][boxY].begin(),
                             m_possible_matrix[boxX][boxY].end(), num);
         if (it !=
@@ -64,9 +67,13 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
             // TODO insert into field,than repeat update
           }
         }
+
+        else {
+        }
       }
     }
-  printPossibleMatrix();
+    boxY = boxY - 3;
+  }
 }
 
 void Matrix::initializePossibleMatrix() {
