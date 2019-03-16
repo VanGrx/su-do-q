@@ -30,6 +30,9 @@ public:
   void storeSinglePosibility(int i, int j);
   void prepareMatrix();
   ~Matrix();
+  void updateColumn(int num, int i, int j);
+  void updateRow(int num, int i, int j);
+  void updateBox(int num, int i, int j);
 
 private:
   int m_solution_matrix[9][9];

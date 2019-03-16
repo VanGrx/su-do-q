@@ -29,9 +29,7 @@ void Matrix::prepareMatrix() {
   initializePossibleMatrix();
 }
 
-void Matrix::updatePossibleMatrix(int num, int i, int j) {
-  m_possible_matrix[i][j].clear();
-
+void Matrix::updateColumn(int num, int i, int j) {
   for (int j1 = 0; j1 < 9; j1++) {
     if (j1 == j && m_solution_matrix[i][j1] != 0)
       continue;
@@ -55,6 +53,8 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
       }
     }
   }
+}
+void Matrix::updateRow(int num, int i, int j) {
   for (int i1 = 0; i1 < 9; i1++) {
     if (i1 == i && m_solution_matrix[i1][j] != 0)
       continue;
@@ -69,8 +69,8 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
       }
     }
   }
-
-  // box check
+}
+void Matrix::updateBox(int num, int i, int j) {
   int boxX = i <= 2 ? 0 : i <= 5 ? 3 : 6;
   int boxY = j <= 2 ? 0 : j <= 5 ? 3 : 6;
 
@@ -95,6 +95,14 @@ void Matrix::updatePossibleMatrix(int num, int i, int j) {
     }
     boxY = boxY - 3;
   }
+}
+
+void Matrix::updatePossibleMatrix(int num, int i, int j) {
+  m_possible_matrix[i][j].clear();
+
+  updateColumn(num, i, j);
+  updateRow(num, i, j);
+  updateBox(num, i, j);
 }
 
 void Matrix::initializePossibleMatrix() {
