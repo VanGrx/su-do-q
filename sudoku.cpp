@@ -4,33 +4,45 @@
 Sudoku::Sudoku() {}
 
 Sudoku::Sudoku(QString input_numbers) {
-  Matrix m = Matrix(input_numbers);
+  Matrix *m = new Matrix(input_numbers);
   calculation.push_back(m);
 }
 
 QString Sudoku::resolve() {
 
-  calculation.at(0).solveSingleElements();
-  if (!calculation.at(0).isSolvable())
+  calculation.at(0)->solveSingleElements();
+
+  // Initial Matrix is unsolvable. We exit with message.
+  if (calculation.at(0)->getStatus() == Matrix::UNSOLVABLE)
     return "not_solvable";
+  // Initial Matrix is solved. We return the solution.
+  if (calculation.at(0)->getStatus() == Matrix::SOLVED)
+    return calculation.back()->getStringMatrix();
 
-  if (calculation.at(0).getRemaining() != 0) {
-    // in case only 2 posibilities are remaining:
-    Matrix m1 = Matrix(calculation.at(0));
+  // Initial Matrix is not solved. We create a new with added values
 
-    int i = 0; // calculation.at(0).findMinPossibilityIndexes().getI();
-    int j = 0; // calculation.at(0).findMinPossibilityIndexes().getJ();
-    //    // premise: lowest number of possible elements is 2
-    //    // starter matrix finds cell with min possible elements
-    //    // inserts 1st element (i,j,0)
-    //    //    calculation.at(0).setSolutionMatrix(
-    //    //        i, j, calculation.at(0).getPossibleMatrixValue(i, j, 0));
+  while (!calculation.empty()) {
+    while (!calculation.back()->min_poss.empty()) {
 
-    //    // new matrix inserts the second element (i,j,1)
-    m1.setSolutionMatrix(i, j,
-                         calculation.at(0).getPossibleMatrixValue(i, j, 1));
-    m1.solveSingleElements();
-    //    calculation.push_back(m1);
+      Matrix *m = new Matrix(*calculation.back());
+
+      m->setSolutionMatrix(calculation.back()->min_x, calculation.back()->min_y,
+                           calculation.back()->min_poss.back());
+
+      calculation.back()->min_poss.pop_back();
+      m->solveSingleElements();
+
+      calculation.push_back(m);
+
+      if (calculation.back()->getStatus() == Matrix::SOLVED)
+        return calculation.back()->getStringMatrix();
+      if (calculation.back()->getStatus() == Matrix::UNSOLVED) {
+      } else
+        calculation.pop_back();
+    }
+
+    calculation.pop_back();
   }
-  return (calculation.end() - 1)->getStringMatrix();
+
+  return "not_solvable";
 }

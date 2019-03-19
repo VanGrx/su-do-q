@@ -17,23 +17,24 @@ Matrix::Matrix(const Matrix &other) {
   m_string_matrix = other.m_string_matrix;
 }
 
-// singlePosibility Matrix::findMinPossibilityIndexes() {
-//  int min_remaining = 9;
-//  singlePosibility min_posibility_cell;
-//  for (int i = 0; i < 9; i++)
-//    for (int j = 0; j < 9; j++) {
-//      if (static_cast<int>(m_possible_matrix[i][j].size()) < min_remaining &&
-//          static_cast<int>(m_possible_matrix[i][j].size()) > 1) {
-//        min_remaining = static_cast<int>(m_possible_matrix[i][j].size());
-//        min_posibility_cell.setI(i);
-//        min_posibility_cell.setJ(j);
-//      }
-//    }
-//  return min_posibility_cell;
-//}
+void Matrix::findMinPossibilities() {
+  int min_remaining = 9;
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 9; j++) {
+      if (static_cast<int>(m_possible_matrix[i][j].size()) < min_remaining &&
+          static_cast<int>(m_possible_matrix[i][j].size()) > 1) {
+        min_remaining = static_cast<int>(m_possible_matrix[i][j].size());
+        min_x = i;
+        min_y = j;
+        min_poss = std::vector<int>(m_possible_matrix[i][j]);
+      }
+    }
+  return;
+}
 
 void Matrix::setSolutionMatrix(int i, int j, int num) {
   m_solution_matrix[i][j] = num;
+  m_remaining_empty--;
   updatePossibleMatrix(num, i, j);
 }
 
@@ -103,6 +104,8 @@ bool Matrix::isSolvable() {
 
   return true;
 }
+
+int Matrix::getStatus() const { return m_status; }
 
 void Matrix::updateColumn(int num, int i, int j) {
   for (int j1 = 0; j1 < 9; j1++) {
@@ -195,6 +198,7 @@ void Matrix::printMatrix() const {
     }
     std::cout << std::endl;
   }
+  std::cout << std::endl << std::endl;
   // printPossibleMatrix();
 }
 
@@ -230,6 +234,16 @@ void Matrix::solveSingleElements() {
   printMatrix();
 
   parseMatrixAsString();
+
+  if (isSolvable())
+    if (m_remaining_empty == 0)
+      m_status = Matrix::SOLVED;
+    else {
+      findMinPossibilities();
+      m_status = Matrix::UNSOLVED;
+    }
+  else
+    m_status = Matrix::UNSOLVABLE;
 }
 
 Matrix::~Matrix(){};

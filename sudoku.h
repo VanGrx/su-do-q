@@ -5,7 +5,7 @@
 
 class Sudoku {
 private:
-  std::vector<Matrix> calculation;
+  std::vector<Matrix *> calculation;
 
 public:
   Sudoku();
