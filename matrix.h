@@ -6,9 +6,12 @@
 
 class singlePosibility {
 public:
+  singlePosibility();
   singlePosibility(int i, int j);
   int getI() const;
   int getJ() const;
+  void setI(int i);
+  void setJ(int j);
 
 private:
   int m_i;
@@ -19,6 +22,7 @@ class Matrix {
 public:
   Matrix();
   Matrix(QString input);
+  Matrix(const Matrix &other);
   void printMatrix() const;
   void createMatrixFromFile();
   void parseMatrixAsString();
@@ -33,8 +37,13 @@ public:
   void updateColumn(int num, int i, int j);
   void updateRow(int num, int i, int j);
   void updateBox(int num, int i, int j);
+  void setSolutionMatrix(int i, int j, int num);
+  unsigned returnRemaining();
+  singlePosibility findMinPossibilityIndexes();
+  int getPossibleMatrixValue(int i, int j, int pos);
 
 private:
+  unsigned int m_remaining_empty;
   int m_solution_matrix[9][9];
   std::vector<int> m_possible_matrix[9][9];
   QString m_string_matrix;
