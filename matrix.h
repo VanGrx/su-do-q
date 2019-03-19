@@ -10,7 +10,6 @@ public:
   Matrix(QString input);
   Matrix(const Matrix &other);
   void printMatrix() const;
-  void createMatrixFromFile();
   void parseMatrixAsString();
   QString getStringMatrix() const;
   void updatePossibleMatrix(int num, int i, int j);
@@ -25,7 +24,6 @@ public:
   void updateBox(int num, int i, int j);
   void setSolutionMatrix(int i, int j, int num);
   unsigned getRemaining();
-  int getPossibleMatrixValue(int i, int j, int pos);
   bool isSolvable();
   enum status { UNSOLVED = 0, SOLVED, UNSOLVABLE };
   int getStatus() const;

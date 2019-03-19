@@ -38,14 +38,6 @@ void Matrix::setSolutionMatrix(int i, int j, int num) {
   updatePossibleMatrix(num, i, j);
 }
 
-// For begining of the possible matrix,insert '0', for 2nd element '1'
-// If remaining matrix is bigger than 2 elements,can be redone 2 return more
-// than 2
-int Matrix::getPossibleMatrixValue(int i, int j, int pos) {
-  return pos == 0 ? m_possible_matrix[i][j].front()
-                  : m_possible_matrix[i][j].back();
-}
-
 void Matrix::prepareMatrix() {
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 9; j++)
