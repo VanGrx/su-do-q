@@ -24,23 +24,28 @@ QString Sudoku::resolve() {
   while (!calculation.empty()) {
     while (!calculation.back()->min_poss.empty()) {
 
+      // Create a new matrix
       Matrix *m = new Matrix(*calculation.back());
 
+      // Set one possible solution
       m->setSolutionMatrix(calculation.back()->min_x, calculation.back()->min_y,
                            calculation.back()->min_poss.back());
-
       calculation.back()->min_poss.pop_back();
+      // Try to solve the new matrix
       m->solveSingleElements();
-
+      // Add it to the vector
       calculation.push_back(m);
 
+      // If the last one is solved, we found the solution
       if (calculation.back()->getStatus() == Matrix::SOLVED)
         return calculation.back()->getStringMatrix();
-      if (calculation.back()->getStatus() == Matrix::UNSOLVED) {
-      } else
+      // if it is UNSOLVABLE. We remove the last matrix
+      // and try another solution.
+      if (calculation.back()->getStatus() == Matrix::UNSOLVABLE)
         calculation.pop_back();
+      // if it is newither, then it is unsolved yet, we continue the same
+      // process on the new matrix
     }
-
     calculation.pop_back();
   }
 
