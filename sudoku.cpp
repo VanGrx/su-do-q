@@ -10,15 +10,16 @@ Sudoku::Sudoku(QString input_numbers) {
 
 QString Sudoku::resolve() {
 
+  calculation.at(0).solveSingleElements();
   if (!calculation.at(0).isSolvable())
     return "not_solvable";
-  calculation.at(0).solveSingleElements();
+
   if (calculation.at(0).getRemaining() != 0) {
     // in case only 2 posibilities are remaining:
     Matrix m1 = Matrix(calculation.at(0));
 
-    int i = calculation.at(0).findMinPossibilityIndexes().getI();
-    int j = calculation.at(0).findMinPossibilityIndexes().getJ();
+    int i = 0; // calculation.at(0).findMinPossibilityIndexes().getI();
+    int j = 0; // calculation.at(0).findMinPossibilityIndexes().getJ();
     //    // premise: lowest number of possible elements is 2
     //    // starter matrix finds cell with min possible elements
     //    // inserts 1st element (i,j,0)
@@ -31,5 +32,5 @@ QString Sudoku::resolve() {
     m1.solveSingleElements();
     //    calculation.push_back(m1);
   }
-  return calculation.at(0).getStringMatrix();
+  return (calculation.end() - 1)->getStringMatrix();
 }

@@ -4,20 +4,6 @@
 #include <iostream>
 #include <vector>
 
-class singlePosibility {
-public:
-  singlePosibility();
-  singlePosibility(int i, int j);
-  int getI() const;
-  int getJ() const;
-  void setI(int i);
-  void setJ(int j);
-
-private:
-  int m_i;
-  int m_j;
-};
-
 class Matrix {
 public:
   Matrix();
@@ -39,7 +25,6 @@ public:
   void updateBox(int num, int i, int j);
   void setSolutionMatrix(int i, int j, int num);
   unsigned getRemaining();
-  singlePosibility findMinPossibilityIndexes();
   int getPossibleMatrixValue(int i, int j, int pos);
   bool isSolvable();
 
@@ -48,7 +33,6 @@ private:
   int m_solution_matrix[9][9];
   std::vector<int> m_possible_matrix[9][9];
   QString m_string_matrix;
-  std::vector<singlePosibility> m_store_possible;
 };
 
 #endif // MATRIX_H

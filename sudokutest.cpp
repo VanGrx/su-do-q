@@ -21,7 +21,7 @@ void SudokuTest::firstSimpleTest() {
                    "763418259";
   Sudoku *instance = new Sudoku(input);
   QString solution = instance->resolve();
-  QVERIFY(solution.compare(output) == 0);
+  QCOMPARE(solution, output);
 }
 
 void SudokuTest::secondSimpleTest() {
@@ -45,7 +45,7 @@ void SudokuTest::secondSimpleTest() {
                    "873512964";
   Sudoku *instance = new Sudoku(input);
   QString solution = instance->resolve();
-  QVERIFY(solution.compare(output) == 0);
+  QCOMPARE(solution, output);
 }
 
 void SudokuTest::firstUnsolvableTest() {
@@ -61,7 +61,7 @@ void SudokuTest::firstUnsolvableTest() {
   QString output = "not_solvable";
   Sudoku *instance = new Sudoku(input);
   QString solution = instance->resolve();
-  QVERIFY(solution.compare(output) == 0);
+  QCOMPARE(solution, output);
 }
 
 void SudokuTest::secondUnsolvableTest() {
@@ -77,7 +77,7 @@ void SudokuTest::secondUnsolvableTest() {
   QString output = "not_solvable";
   Sudoku *instance = new Sudoku(input);
   QString solution = instance->resolve();
-  QVERIFY(solution.compare(output) == 0);
+  QCOMPARE(solution, output);
 }
 
 void SudokuTest::thirdUnsolvableTest() {
@@ -93,7 +93,7 @@ void SudokuTest::thirdUnsolvableTest() {
   QString output = "not_solvable";
   Sudoku *instance = new Sudoku(input);
   QString solution = instance->resolve();
-  QVERIFY(solution.compare(output) == 0);
+  QCOMPARE(solution, output);
 }
 
 void SudokuTest::forthUnsolvableTest() {
@@ -109,7 +109,7 @@ void SudokuTest::forthUnsolvableTest() {
   QString output = "not_solvable";
   Sudoku *instance = new Sudoku(input);
   QString solution = instance->resolve();
-  QVERIFY(solution.compare(output) == 0);
+  QCOMPARE(solution, output);
 }
 
 void SudokuTest::firstIntermediateTest() {
@@ -133,7 +133,7 @@ void SudokuTest::firstIntermediateTest() {
                    "745316892";
   Sudoku *instance = new Sudoku(input);
   QString solution = instance->resolve();
-  QVERIFY(solution.compare(output) == 0);
+  QCOMPARE(solution, output);
 }
 
 QTEST_MAIN(SudokuTest)

@@ -3,12 +3,6 @@
 #include <set>
 #include <stdio.h>
 #include <string.h>
-singlePosibility::singlePosibility(){};
-singlePosibility::singlePosibility(int i, int j) : m_i(i), m_j(j){};
-int singlePosibility::getI() const { return m_i; }
-int singlePosibility::getJ() const { return m_j; }
-void singlePosibility::setI(int i) { m_i = i; }
-void singlePosibility::setJ(int j) { m_j = j; }
 
 Matrix::Matrix(){};
 Matrix::Matrix(QString input) : m_string_matrix(input) { prepareMatrix(); }
@@ -21,35 +15,22 @@ Matrix::Matrix(const Matrix &other) {
         m_possible_matrix[i][j].push_back(it);
     }
   m_string_matrix = other.m_string_matrix;
-  for (auto it : other.m_store_possible)
-    m_store_possible.push_back(it);
 }
 
-void Matrix::storeSinglePosibility(int i, int j) {
-  // check if this index is already stored in vector of posibilities
-  // if not store new coordinates for a single posibility
-  auto iterator = std::find_if(m_store_possible.begin(), m_store_possible.end(),
-                               [&i, &j](const singlePosibility &s) {
-                                 return (i == s.getI()) && (j == s.getJ());
-                               });
-  if (iterator == m_store_possible.end())
-    m_store_possible.push_back(singlePosibility(i, j));
-}
-
-singlePosibility Matrix::findMinPossibilityIndexes() {
-  int min_remaining = 9;
-  singlePosibility min_posibility_cell;
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 9; j++) {
-      if (static_cast<int>(m_possible_matrix[i][j].size()) < min_remaining &&
-          static_cast<int>(m_possible_matrix[i][j].size()) > 1) {
-        min_remaining = static_cast<int>(m_possible_matrix[i][j].size());
-        min_posibility_cell.setI(i);
-        min_posibility_cell.setJ(j);
-      }
-    }
-  return min_posibility_cell;
-}
+// singlePosibility Matrix::findMinPossibilityIndexes() {
+//  int min_remaining = 9;
+//  singlePosibility min_posibility_cell;
+//  for (int i = 0; i < 9; i++)
+//    for (int j = 0; j < 9; j++) {
+//      if (static_cast<int>(m_possible_matrix[i][j].size()) < min_remaining &&
+//          static_cast<int>(m_possible_matrix[i][j].size()) > 1) {
+//        min_remaining = static_cast<int>(m_possible_matrix[i][j].size());
+//        min_posibility_cell.setI(i);
+//        min_posibility_cell.setJ(j);
+//      }
+//    }
+//  return min_posibility_cell;
+//}
 
 void Matrix::setSolutionMatrix(int i, int j, int num) {
   m_solution_matrix[i][j] = num;
@@ -131,22 +112,6 @@ void Matrix::updateColumn(int num, int i, int j) {
                         m_possible_matrix[i][j1].end(), num);
     if (it != m_possible_matrix[i][j1].end()) { // found a hit -> delete it
       m_possible_matrix[i][j1].erase(it);
-      if (m_possible_matrix[i][j1].size() == 1) {
-        storeSinglePosibility(i,
-                              j1); // TODO insert into field,than repeat update
-                                   /*
-                                    * can be done with threads :
-                                    * 1st thread inserts the 1 number remaining in m_possible_matrix
-                                    * into
-                                    * field,and continues not caring baout the other thread 2nd thread
-                                    * starts from begining and repeats the function with the  inserted
-                                    * number ^ eventually a third thread does what the 2nd does,and 2nd
-                                    * continues on.. maybe: no mutex or semaphores needed? any memory
-                                    * change in vector or matrix is a valid change.. maybe: race
-                                    * conditions
-                                    * might cause problems
-                                    */
-      }
     }
   }
 }
@@ -159,10 +124,6 @@ void Matrix::updateRow(int num, int i, int j) {
     if (it != m_possible_matrix[i1][j].end()) { // found a hit -> delete it
       m_possible_matrix[i1][j].erase(it); // check if remaining posibilities
                                           // is 1 -> than insert and repeat
-      if (m_possible_matrix[i1][j].size() == 1) {
-        // TODO insert into field,than repeat update
-        storeSinglePosibility(i1, j);
-      }
     }
   }
 }
@@ -181,11 +142,6 @@ void Matrix::updateBox(int num, int i, int j) {
           m_possible_matrix[boxX][boxY].erase(
               it); // check if remaining posibilities
                    // is 1 -> than insert and repeat
-          if (m_possible_matrix[boxX][boxY].size() == 1) {
-            storeSinglePosibility(boxX, boxY);
-
-            // TODO insert into field,than repeat update
-          }
         }
       }
     }
@@ -253,45 +209,24 @@ void Matrix::parseMatrixAsString() {
 QString Matrix::getStringMatrix() const { return m_string_matrix; }
 
 void Matrix::solveSingleElements() {
-  while (m_store_possible.empty() == false) {
-    int i = m_store_possible.front().getI();
-    int j = m_store_possible.front().getJ();
-    /*   std::cout << "Single element- i:" << i << " , j:" << j
-                 << " ,number:" << m_possible_matrix[i][j].front() <<
-       std::endl;*/
-    m_store_possible.erase(m_store_possible.begin());
-    m_solution_matrix[i][j] = m_possible_matrix[i][j].front();
-    updatePossibleMatrix(m_possible_matrix[i][j].front(), i, j);
-    m_remaining_empty--;
-  }
-  // No single posibilities remaining,but matrix is undone
-  // Store current state of matrix in vector,and try to solve
-  // Find least posibility cell ,and put one numbers than resolve
 
-  /*if (m_remaining_empty != 0) {
+  unsigned int curr_empty = m_remaining_empty + 1;
 
-      int min_remaining = 9;
-      singlePosibility min_posibility_cell;
-      for (int i = 0; i < 9; i++)
-        for (int j = 0; j < 9; j++) {
-          if (static_cast<int>(m_possible_matrix[i][j].size()) <
-     min_remaining)
-      { min_remaining = static_cast<int>(m_possible_matrix[i][j].size());
-            min_posibility_cell.setI(i);
-            min_posibility_cell.setJ(j);
-          }
+  while (curr_empty != m_remaining_empty) {
+
+    curr_empty = m_remaining_empty;
+
+    for (int i = 0; i < 9; i++)
+      for (int j = 0; j < 9; j++) {
+        if (m_possible_matrix[i][j].size() == 1 &&
+            m_solution_matrix[i][j] == 0) {
+          m_solution_matrix[i][j] = m_possible_matrix[i][j].front();
+          updatePossibleMatrix(m_possible_matrix[i][j].front(), i, j);
+          m_remaining_empty--;
         }
-      // in case only 2 posibilities are remaining:
-      Matrix *m1 = new Matrix(*this);
-
-      int i = min_posibility_cell.getI();
-      int j = min_posibility_cell.getJ();
-      m_solution_matrix[i][j] = m_possible_matrix[i][j].front();
-      m1->setSolutionMatrix(i, j, m_possible_matrix[i][j].back());
-      updatePossibleMatrix(m_solution_matrix[i][j], i, j);
-      Matrix::solveSingleElements();
       }
-      */
+  }
+
   printMatrix();
 
   parseMatrixAsString();
