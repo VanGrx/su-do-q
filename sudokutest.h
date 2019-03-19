@@ -13,6 +13,10 @@ private slots:
   void initTestCase() { qDebug("Start Sudoku testing"); }
   void firstSimpleTest();
   void secondSimpleTest();
+  void firstUnsolvableTest();
+  void secondUnsolvableTest();
+  void thirdUnsolvableTest();
+  void forthUnsolvableTest();
   void firstIntermediateTest();
   void cleanupTestCase() { qDebug("Finish Sudoku testing"); }
 };

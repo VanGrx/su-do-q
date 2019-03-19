@@ -48,6 +48,70 @@ void SudokuTest::secondSimpleTest() {
   QVERIFY(solution.compare(output) == 0);
 }
 
+void SudokuTest::firstUnsolvableTest() {
+  QString input = "200260701"
+                  "680070090"
+                  "190004500"
+                  "820100040"
+                  "004602900"
+                  "050003028"
+                  "009300074"
+                  "040050036"
+                  "703018000";
+  QString output = "not_solvable";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QVERIFY(solution.compare(output) == 0);
+}
+
+void SudokuTest::secondUnsolvableTest() {
+  QString input = "200060701"
+                  "680070090"
+                  "190004500"
+                  "820100040"
+                  "004602900"
+                  "050003028"
+                  "009300074"
+                  "240050036"
+                  "703018000";
+  QString output = "not_solvable";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QVERIFY(solution.compare(output) == 0);
+}
+
+void SudokuTest::thirdUnsolvableTest() {
+  QString input = "000260701"
+                  "680070090"
+                  "196004500"
+                  "820100040"
+                  "004602900"
+                  "050003028"
+                  "009300074"
+                  "040050036"
+                  "703018000";
+  QString output = "not_solvable";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QVERIFY(solution.compare(output) == 0);
+}
+
+void SudokuTest::forthUnsolvableTest() {
+  QString input = "000260701"
+                  "680070090"
+                  "190004500"
+                  "820100040"
+                  "004602900"
+                  "050003028"
+                  "009300074"
+                  "040050036"
+                  "703018400";
+  QString output = "not_solvable";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QVERIFY(solution.compare(output) == 0);
+}
+
 void SudokuTest::firstIntermediateTest() {
   QString input = "020608000"
                   "580009700"

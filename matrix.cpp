@@ -1,5 +1,6 @@
 #include "matrix.h"
 #include <iterator>
+#include <set>
 #include <stdio.h>
 #include <string.h>
 singlePosibility::singlePosibility(){};
@@ -40,7 +41,8 @@ singlePosibility Matrix::findMinPossibilityIndexes() {
   singlePosibility min_posibility_cell;
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 9; j++) {
-      if (static_cast<int>(m_possible_matrix[i][j].size()) < min_remaining) {
+      if (static_cast<int>(m_possible_matrix[i][j].size()) < min_remaining &&
+          static_cast<int>(m_possible_matrix[i][j].size()) > 1) {
         min_remaining = static_cast<int>(m_possible_matrix[i][j].size());
         min_posibility_cell.setI(i);
         min_posibility_cell.setJ(j);
@@ -70,7 +72,56 @@ void Matrix::prepareMatrix() {
   initializePossibleMatrix();
 }
 
-unsigned Matrix::returnRemaining() { return m_remaining_empty; }
+unsigned Matrix::getRemaining() { return m_remaining_empty; }
+
+bool Matrix::isSolvable() {
+  for (int i = 0; i < 9; i++) {
+    std::set<int> numbers;
+    for (int j = 0; j < 9; j++) {
+      if (m_possible_matrix[i][j].empty() && m_solution_matrix[i][j] == 0)
+        return false;
+      if (m_solution_matrix[i][j] != 0) {
+        if (numbers.count(m_solution_matrix[i][j]) == 0)
+          numbers.insert(m_solution_matrix[i][j]);
+        else
+          return false;
+      }
+    }
+  }
+
+  for (int j = 0; j < 9; j++) {
+    std::set<int> numbers;
+    for (int i = 0; i < 9; i++) {
+      if (m_solution_matrix[i][j] != 0) {
+        if (numbers.count(m_solution_matrix[i][j]) == 0)
+          numbers.insert(m_solution_matrix[i][j]);
+        else
+          return false;
+      }
+    }
+  }
+
+  for (int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+      int boxX = i * 3;
+      int boxY = j * 3;
+      std::set<int> numbers;
+      for (int i1 = 0; i1 < 3; i1++, boxX++) {
+        boxY = j * 3;
+        for (int j1 = 0; j1 < 3; j1++, boxY++) {
+          if (m_solution_matrix[boxX][boxY] != 0) {
+            if (numbers.count(m_solution_matrix[boxX][boxY]) == 0)
+              numbers.insert(m_solution_matrix[boxX][boxY]);
+            else
+              return false;
+          }
+        }
+      }
+    }
+  }
+
+  return true;
+}
 
 void Matrix::updateColumn(int num, int i, int j) {
   for (int j1 = 0; j1 < 9; j1++) {
@@ -83,16 +134,18 @@ void Matrix::updateColumn(int num, int i, int j) {
       if (m_possible_matrix[i][j1].size() == 1) {
         storeSinglePosibility(i,
                               j1); // TODO insert into field,than repeat update
-        /*
-         * can be done with threads :
-         * 1st thread inserts the 1 number remaining in m_possible_matrix into
-         * field,and continues not caring baout the other thread 2nd thread
-         * starts from begining and repeats the function with the  inserted
-         * number ^ eventually a third thread does what the 2nd does,and 2nd
-         * continues on.. maybe: no mutex or semaphores needed? any memory
-         * change in vector or matrix is a valid change.. maybe: race conditions
-         * might cause problems
-         */
+                                   /*
+                                    * can be done with threads :
+                                    * 1st thread inserts the 1 number remaining in m_possible_matrix
+                                    * into
+                                    * field,and continues not caring baout the other thread 2nd thread
+                                    * starts from begining and repeats the function with the  inserted
+                                    * number ^ eventually a third thread does what the 2nd does,and 2nd
+                                    * continues on.. maybe: no mutex or semaphores needed? any memory
+                                    * change in vector or matrix is a valid change.. maybe: race
+                                    * conditions
+                                    * might cause problems
+                                    */
       }
     }
   }
@@ -104,8 +157,8 @@ void Matrix::updateRow(int num, int i, int j) {
     auto it = std::find(m_possible_matrix[i1][j].begin(),
                         m_possible_matrix[i1][j].end(), num);
     if (it != m_possible_matrix[i1][j].end()) { // found a hit -> delete it
-      m_possible_matrix[i1][j].erase(
-          it); // check if remaining posibilities is 1 -> than insert and repeat
+      m_possible_matrix[i1][j].erase(it); // check if remaining posibilities
+                                          // is 1 -> than insert and repeat
       if (m_possible_matrix[i1][j].size() == 1) {
         // TODO insert into field,than repeat update
         storeSinglePosibility(i1, j);
@@ -221,7 +274,8 @@ void Matrix::solveSingleElements() {
       singlePosibility min_posibility_cell;
       for (int i = 0; i < 9; i++)
         for (int j = 0; j < 9; j++) {
-          if (static_cast<int>(m_possible_matrix[i][j].size()) < min_remaining)
+          if (static_cast<int>(m_possible_matrix[i][j].size()) <
+     min_remaining)
       { min_remaining = static_cast<int>(m_possible_matrix[i][j].size());
             min_posibility_cell.setI(i);
             min_posibility_cell.setJ(j);

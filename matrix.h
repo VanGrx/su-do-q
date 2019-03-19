@@ -38,9 +38,10 @@ public:
   void updateRow(int num, int i, int j);
   void updateBox(int num, int i, int j);
   void setSolutionMatrix(int i, int j, int num);
-  unsigned returnRemaining();
+  unsigned getRemaining();
   singlePosibility findMinPossibilityIndexes();
   int getPossibleMatrixValue(int i, int j, int pos);
+  bool isSolvable();
 
 private:
   unsigned int m_remaining_empty;
