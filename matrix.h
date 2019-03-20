@@ -9,6 +9,9 @@ public:
   Matrix();
   Matrix(QString input);
   Matrix(const Matrix &other);
+  bool isRowValid() const;
+  bool isColumnValid() const;
+  bool isBoxValid() const;
   void parseMatrixAsString();
   QString getStringMatrix() const;
   void updatePossibleMatrix(int num, int i, int j);

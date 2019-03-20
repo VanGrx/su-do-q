@@ -54,6 +54,10 @@ void Matrix::initializePossibleMatrix() {
         m_remaining_empty--;
         updatePossibleMatrix(m_solution_matrix[i][j], i, j);
       }
+  if (!(isRowValid() && isColumnValid() && isBoxValid())) {
+    std::cerr << "UNSOLVABLE MATRIX\nPlease reinitialize the matrix with valid "
+                 "numbers.\n";
+  }
 }
 
 void Matrix::findMinPossibilities() {
@@ -128,7 +132,22 @@ void Matrix::updateBox(int num, int i, int j) {
   }
 }
 
-bool Matrix::isSolvable() {
+bool Matrix::isRowValid() const {
+
+  for (int j = 0; j < 9; j++) {
+    std::set<int> numbers;
+    for (int i = 0; i < 9; i++) {
+      if (m_solution_matrix[i][j] != 0) {
+        if (numbers.count(m_solution_matrix[i][j]) == 0)
+          numbers.insert(m_solution_matrix[i][j]);
+        else
+          return false;
+      }
+    }
+  }
+  return true;
+}
+bool Matrix::isColumnValid() const {
   for (int i = 0; i < 9; i++) {
     std::set<int> numbers;
     for (int j = 0; j < 9; j++) {
@@ -142,18 +161,9 @@ bool Matrix::isSolvable() {
       }
     }
   }
-
-  for (int j = 0; j < 9; j++) {
-    std::set<int> numbers;
-    for (int i = 0; i < 9; i++) {
-      if (m_solution_matrix[i][j] != 0) {
-        if (numbers.count(m_solution_matrix[i][j]) == 0)
-          numbers.insert(m_solution_matrix[i][j]);
-        else
-          return false;
-      }
-    }
-  }
+  return true;
+}
+bool Matrix::isBoxValid() const {
 
   for (int j = 0; j < 3; j++) {
     for (int i = 0; i < 3; i++) {
@@ -173,7 +183,17 @@ bool Matrix::isSolvable() {
       }
     }
   }
+  return true;
+}
 
+bool Matrix::isSolvable() {
+  for (int j = 0; j < 9; j++) {
+    for (int i = 0; i < 9; i++) {
+      if (m_solution_matrix[i][j] == 0 && m_possible_matrix[i][j].empty()) {
+        return false;
+      }
+    }
+  }
   return true;
 }
 
