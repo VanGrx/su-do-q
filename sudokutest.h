@@ -18,6 +18,10 @@ private slots:
   void thirdUnsolvableTest();
   void forthUnsolvableTest();
   void firstIntermediateTest();
+  void firstHardTest();
+  void secondHardTest();
+  void thirdHardTest();
+  void randomTest();
   void cleanupTestCase() { qDebug("Finish Sudoku testing"); }
 };
 #endif // SUDOKUTEST_H

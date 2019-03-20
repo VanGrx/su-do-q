@@ -136,4 +136,107 @@ void SudokuTest::firstIntermediateTest() {
   QCOMPARE(solution, output);
 }
 
+void SudokuTest::firstHardTest() {
+  QString input = "000600400"
+                  "700003600"
+                  "000091080"
+                  "000000000"
+                  "050180003"
+                  "000306045"
+                  "040200060"
+                  "903000000"
+                  "020000100";
+  QString output = "581672439"
+                   "792843651"
+                   "364591782"
+                   "438957216"
+                   "256184973"
+                   "179326845"
+                   "845219367"
+                   "913768524"
+                   "627435198";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QCOMPARE(solution, output);
+}
+
+void SudokuTest::secondHardTest() {
+  QString input = "200300000"
+                  "804062003"
+                  "013800200"
+                  "000020390"
+                  "507000621"
+                  "032006000"
+                  "020009140"
+                  "601250809"
+                  "000001002";
+  QString output = "276314958"
+                   "854962713"
+                   "913875264"
+                   "468127395"
+                   "597438621"
+                   "132596487"
+                   "325789146"
+                   "641253879"
+                   "789641532";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QCOMPARE(solution, output);
+}
+
+void SudokuTest::thirdHardTest() {
+  QString input = "020000000"
+                  "000600003"
+                  "074080000"
+                  "000003002"
+                  "080040010"
+                  "600500000"
+                  "000010780"
+                  "500009000"
+                  "000000040";
+  QString output = "126437958"
+                   "895621473"
+                   "374985126"
+                   "457193862"
+                   "983246517"
+                   "612578394"
+                   "269314785"
+                   "548769231"
+                   "731852649";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QCOMPARE(solution, output);
+}
+
+void SudokuTest::randomTest() {
+  QString input = "126437958"
+                  "895621473"
+                  "374985126"
+                  "457193862"
+                  "983246517"
+                  "612578394"
+                  "269314785"
+                  "548769231"
+                  "731852649";
+
+  srand(time(nullptr));
+
+  int blank_pos = rand() % 40 + 1;
+
+  for (int i = 0; i < blank_pos; i++)
+    input[rand() % 81] = QChar('0');
+  QString output = "126437958"
+                   "895621473"
+                   "374985126"
+                   "457193862"
+                   "983246517"
+                   "612578394"
+                   "269314785"
+                   "548769231"
+                   "731852649";
+  Sudoku *instance = new Sudoku(input);
+  QString solution = instance->resolve();
+  QCOMPARE(solution, output);
+}
+
 QTEST_MAIN(SudokuTest)
