@@ -4,9 +4,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef QT_DEBUG
+#include "matrixdebug.h"
+#endif
+
 Matrix::Matrix(){};
 Matrix::Matrix(QString input) : m_string_matrix(input) { prepareMatrix(); }
 Matrix::Matrix(const Matrix &other) {
+
   m_remaining_empty = other.m_remaining_empty;
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 9; j++) {
@@ -15,6 +20,40 @@ Matrix::Matrix(const Matrix &other) {
         m_possible_matrix[i][j].push_back(it);
     }
   m_string_matrix = other.m_string_matrix;
+}
+Matrix::~Matrix(){};
+
+unsigned Matrix::getRemaining() { return m_remaining_empty; }
+int Matrix::getStatus() const { return m_status; }
+
+QString Matrix::getStringMatrix() const { return m_string_matrix; }
+void Matrix::parseMatrixAsString() {
+  m_string_matrix.clear();
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 9; j++) {
+      m_string_matrix.append(m_solution_matrix[i][j] + '0');
+    }
+}
+
+void Matrix::prepareMatrix() {
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 9; j++)
+      m_solution_matrix[i][j] = m_string_matrix.at(i * 9 + j).digitValue();
+  m_remaining_empty = 81;
+  initializePossibleMatrix();
+}
+
+void Matrix::initializePossibleMatrix() {
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 9; j++)
+      for (int k = 1; k <= 9; k++)
+        m_possible_matrix[i][j].push_back(k);
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 9; j++)
+      if (m_solution_matrix[i][j] != 0) {
+        m_remaining_empty--;
+        updatePossibleMatrix(m_solution_matrix[i][j], i, j);
+      }
 }
 
 void Matrix::findMinPossibilities() {
@@ -38,15 +77,56 @@ void Matrix::setSolutionMatrix(int i, int j, int num) {
   updatePossibleMatrix(num, i, j);
 }
 
-void Matrix::prepareMatrix() {
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 9; j++)
-      m_solution_matrix[i][j] = m_string_matrix.at(i * 9 + j).digitValue();
-  m_remaining_empty = 81;
-  initializePossibleMatrix();
+void Matrix::updatePossibleMatrix(int num, int i, int j) {
+  m_possible_matrix[i][j].clear();
+
+  updateColumn(num, i, j);
+  updateRow(num, i, j);
+  updateBox(num, i, j);
 }
 
-unsigned Matrix::getRemaining() { return m_remaining_empty; }
+void Matrix::updateColumn(int num, int i, int j) {
+  for (int j1 = 0; j1 < 9; j1++) {
+    if (j1 == j && m_solution_matrix[i][j1] != 0)
+      continue;
+    auto it = std::find(m_possible_matrix[i][j1].begin(),
+                        m_possible_matrix[i][j1].end(), num);
+    if (it != m_possible_matrix[i][j1].end()) { // found a hit -> delete it
+      m_possible_matrix[i][j1].erase(it);
+    }
+  }
+}
+void Matrix::updateRow(int num, int i, int j) {
+  for (int i1 = 0; i1 < 9; i1++) {
+    if (i1 == i && m_solution_matrix[i1][j] != 0)
+      continue;
+    auto it = std::find(m_possible_matrix[i1][j].begin(),
+                        m_possible_matrix[i1][j].end(), num);
+    if (it != m_possible_matrix[i1][j].end()) { // found a hit -> delete it
+      m_possible_matrix[i1][j].erase(it);
+    }
+  }
+}
+void Matrix::updateBox(int num, int i, int j) {
+
+  int boxX = i <= 2 ? 0 : i <= 5 ? 3 : 6;
+  int boxY = j <= 2 ? 0 : j <= 5 ? 3 : 6;
+
+  for (int i1 = 0; i1 < 3; i1++, boxX++) {
+    for (int j1 = 0; j1 < 3; j1++, boxY++) {
+      if (m_solution_matrix[boxX][boxY] == 0 &&
+          m_possible_matrix[boxX][boxY].empty() == false) {
+        auto it = std::find(m_possible_matrix[boxX][boxY].begin(),
+                            m_possible_matrix[boxX][boxY].end(), num);
+        if (it !=
+            m_possible_matrix[boxX][boxY].end()) { // found a hit -> delete it
+          m_possible_matrix[boxX][boxY].erase(it);
+        }
+      }
+    }
+    boxY = boxY - 3;
+  }
+}
 
 bool Matrix::isSolvable() {
   for (int i = 0; i < 9; i++) {
@@ -97,119 +177,10 @@ bool Matrix::isSolvable() {
   return true;
 }
 
-int Matrix::getStatus() const { return m_status; }
-
-void Matrix::updateColumn(int num, int i, int j) {
-  for (int j1 = 0; j1 < 9; j1++) {
-    if (j1 == j && m_solution_matrix[i][j1] != 0)
-      continue;
-    auto it = std::find(m_possible_matrix[i][j1].begin(),
-                        m_possible_matrix[i][j1].end(), num);
-    if (it != m_possible_matrix[i][j1].end()) { // found a hit -> delete it
-      m_possible_matrix[i][j1].erase(it);
-    }
-  }
-}
-void Matrix::updateRow(int num, int i, int j) {
-  for (int i1 = 0; i1 < 9; i1++) {
-    if (i1 == i && m_solution_matrix[i1][j] != 0)
-      continue;
-    auto it = std::find(m_possible_matrix[i1][j].begin(),
-                        m_possible_matrix[i1][j].end(), num);
-    if (it != m_possible_matrix[i1][j].end()) { // found a hit -> delete it
-      m_possible_matrix[i1][j].erase(it); // check if remaining posibilities
-                                          // is 1 -> than insert and repeat
-    }
-  }
-}
-void Matrix::updateBox(int num, int i, int j) {
-  int boxX = i <= 2 ? 0 : i <= 5 ? 3 : 6;
-  int boxY = j <= 2 ? 0 : j <= 5 ? 3 : 6;
-
-  for (int i1 = 0; i1 < 3; i1++, boxX++) {
-    for (int j1 = 0; j1 < 3; j1++, boxY++) {
-      if (m_solution_matrix[boxX][boxY] == 0 &&
-          m_possible_matrix[boxX][boxY].empty() == false) {
-        auto it = std::find(m_possible_matrix[boxX][boxY].begin(),
-                            m_possible_matrix[boxX][boxY].end(), num);
-        if (it !=
-            m_possible_matrix[boxX][boxY].end()) { // found a hit -> delete it
-          m_possible_matrix[boxX][boxY].erase(
-              it); // check if remaining posibilities
-                   // is 1 -> than insert and repeat
-        }
-      }
-    }
-    boxY = boxY - 3;
-  }
-}
-
-void Matrix::updatePossibleMatrix(int num, int i, int j) {
-  m_possible_matrix[i][j].clear();
-
-  updateColumn(num, i, j);
-  updateRow(num, i, j);
-  updateBox(num, i, j);
-}
-
-void Matrix::initializePossibleMatrix() {
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 9; j++)
-      for (int k = 1; k <= 9; k++)
-        m_possible_matrix[i][j].push_back(k);
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 9; j++)
-      if (m_solution_matrix[i][j] != 0) {
-        m_remaining_empty--;
-        updatePossibleMatrix(m_solution_matrix[i][j], i, j);
-      }
-}
-
-void Matrix::printPossibleMatrix() const {
-  for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 9; j++) {
-      std::cout << m_solution_matrix[i][j] << " :  ";
-      for (auto it : m_possible_matrix[i][j])
-        std::cout << it << ",";
-      std::cout << std::endl;
-    }
-  }
-}
-
-void Matrix::printMatrix() const {
-
-  for (int i = 0; i < 9; i++) {
-    if (i % 3 == 0 && i != 0) {
-      std::cout << "_______________________" << std::endl;
-    }
-    for (int j = 0; j < 9; j++) {
-      if (j % 3 == 0 && j != 0) {
-        std::cout << " | ";
-      }
-      std::cout << m_solution_matrix[i][j] << " ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl << std::endl;
-  // printPossibleMatrix();
-}
-
-void Matrix::parseMatrixAsString() {
-  m_string_matrix.clear();
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 9; j++) {
-      m_string_matrix.append(m_solution_matrix[i][j] + '0');
-    }
-}
-
-QString Matrix::getStringMatrix() const { return m_string_matrix; }
-
 void Matrix::solveSingleElements() {
-
   unsigned int curr_empty = m_remaining_empty + 1;
 
   while (curr_empty != m_remaining_empty) {
-
     curr_empty = m_remaining_empty;
 
     for (int i = 0; i < 9; i++)
@@ -223,7 +194,8 @@ void Matrix::solveSingleElements() {
       }
   }
 
-  printMatrix();
+  printMatrix(m_solution_matrix);
+  // printPossibleMatrix(m_solution_matrix, m_possible_matrix);
 
   parseMatrixAsString();
 
@@ -237,5 +209,3 @@ void Matrix::solveSingleElements() {
   else
     m_status = Matrix::UNSOLVABLE;
 }
-
-Matrix::~Matrix(){};

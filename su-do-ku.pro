@@ -36,7 +36,8 @@ HEADERS += \
     matrix.h \
     sudoku.h \
     mainwindow.h \
-    myfunc.h
+    myfunc.h \
+    matrixdebug.h
 
 FORMS += \
     mainwindow.ui

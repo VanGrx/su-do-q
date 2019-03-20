@@ -9,12 +9,10 @@ public:
   Matrix();
   Matrix(QString input);
   Matrix(const Matrix &other);
-  void printMatrix() const;
   void parseMatrixAsString();
   QString getStringMatrix() const;
   void updatePossibleMatrix(int num, int i, int j);
   void initializePossibleMatrix();
-  void printPossibleMatrix() const;
   void solveSingleElements();
   void findMinPossibilities();
   void prepareMatrix();
